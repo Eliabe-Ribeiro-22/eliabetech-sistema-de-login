@@ -30,6 +30,9 @@ app.use(cookieParser());
 app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, limit: 100, standardHeaders: 'draft-7', legacyHeaders: false }));
 app.use('/api/auth/login', rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false }));
 app.use('/api/auth/register', rateLimit({ windowMs: 60 * 60 * 1000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false }));
+app.use('/api/auth/verify-email', rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false }));
+app.use('/api/auth/login/2fa', rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false }));
+app.use('/api/auth/2fa', rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false }));
 app.use('/api/auth', authRoutes);
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -44,7 +47,7 @@ async function start() {
     await pool.query('SELECT 1');
     app.listen(port, () => console.log(`EliabeTech disponível em http://localhost:${port}`));
   } catch (error) {
-    console.error('Não foi possível conectar ao MySQL. Verifique o .env e execute database/schema.sql.', error.message);
+    console.error('Não foi possível conectar ao MySQL. Verifique o .env e execute a migração do banco.', error.message);
     process.exit(1);
   }
 }

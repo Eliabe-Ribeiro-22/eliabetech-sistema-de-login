@@ -1,4 +1,3 @@
-require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const pool = require('../src/database');
 
@@ -23,10 +22,10 @@ async function seed() {
     }
     const passwordHash = await bcrypt.hash(passwords[i], 12);
     await pool.execute(
-      'INSERT INTO users (first_name, last_name, phone, email, password_hash) VALUES (?, ?, ?, ?, ?)',
+      'INSERT INTO users (first_name, last_name, phone, email, password_hash, email_verified) VALUES (?, ?, ?, ?, ?, 1)',
       [user.firstName, user.lastName, user.phone, user.email, passwordHash]
     );
-    console.log(`Criado: ${user.email}`);
+    console.log(`Criado e marcado como confirmado: ${user.email}`);
   }
 }
 
