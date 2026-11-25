@@ -1,0 +1,35 @@
+:root {
+  --brand-blue: #01AFF1;
+  --brand-black: #000000;
+  --brand-white: #FFFFFF;
+}
+
+* { box-sizing: border-box; }
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--brand-white);
+  background: radial-gradient(ellipse at top, #063449 0%, #071319 42%, var(--brand-black) 100%);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.auth-shell { min-height: 100vh; display: grid; place-items: center; padding: 2rem 1rem; }
+.auth-card {
+  width: min(100%, 520px);
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+  border: 1px solid rgba(1, 175, 241, .35);
+  border-radius: 1.25rem;
+  background: rgba(0, 0, 0, .88);
+  box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, .45), 0 0 2.5rem rgba(1, 175, 241, .12);
+}
+.brand-mark { color: var(--brand-blue); font-weight: 800; letter-spacing: .04em; }
+.auth-title { font-weight: 750; }
+.form-label { color: #e8f7fc; }
+.form-control { min-height: 46px; color: var(--brand-white); background-color: #111719; border-color: #34434a; }
+.form-control:focus { color: var(--brand-white); background-color: #111719; border-color: var(--brand-blue); box-shadow: 0 0 0 .25rem rgba(1, 175, 241, .2); }
+.form-control::placeholder { color: #9aabb2; }
+.btn-brand { min-height: 46px; color: var(--brand-black); background: var(--brand-blue); border-color: var(--brand-blue); font-weight: 700; }
+.btn-brand:hover, .btn-brand:focus { color: var(--brand-black); background: #35c2f5; border-color: #35c2f5; }
+.btn-link-brand { color: var(--brand-blue); text-decoration: none; }
+.btn-link-brand:hover { color: #71d7ff; text-decoration: underline; }
+.status-area { min-height: 1rem; }
+.dashboard-box { border: 1px solid #263d47; border-radius: .75rem; background: #0c1316; }
