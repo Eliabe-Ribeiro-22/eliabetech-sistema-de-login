@@ -2,7 +2,7 @@
   "name": "eliabetech-sistema-de-login",
   "version": "2.0.0",
   "private": true,
-  "description": "Sistema de autenticação com Next.js, React, NestJS (Express) e MySQL.",
+  "description": "Autenticação com Next.js/React, NestJS sobre Express e MySQL.",
   "workspaces": ["apps/web", "apps/api"],
   "scripts": {
     "dev": "concurrently -k -n api,web -c blue,green \"npm run dev -w @eliabetech/api\" \"npm run dev -w @eliabetech/web\"",

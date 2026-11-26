@@ -7,8 +7,8 @@ export class RegisterDto {
   @IsEmail() @MaxLength(254) email: string;
   @IsString() @MinLength(8) @MaxLength(72) password: string;
 }
-
-export class LoginDto {
-  @IsEmail() @MaxLength(254) email: string;
-  @IsString() @MinLength(8) @MaxLength(72) password: string;
-}
+export class LoginDto { @IsEmail() @MaxLength(254) email: string; @IsString() @MinLength(8) @MaxLength(72) password: string; }
+export class TokenDto { @IsString() @MinLength(64) @MaxLength(64) token: string; }
+export class ResetPasswordDto extends TokenDto { @IsString() @MinLength(8) @MaxLength(72) password: string; }
+export class TotpDto { @IsString() @MinLength(6) @MaxLength(8) code: string; }
+export class ForgotPasswordDto { @IsEmail() @MaxLength(254) email: string; }

@@ -1,43 +1,28 @@
 # EliabeTech — Sistema de Login
 
-Aplicação reorganizada como monorepo: interface React com Next.js e API NestJS usando o adaptador Express padrão, com MySQL. A implementação anterior em Express está mantida nos arquivos existentes enquanto a migração evolui; os comandos da raiz executam as novas aplicações em `apps/web` e `apps/api`.
+Aplicação organizada como monorepo com frontend **React + Next.js**, API **NestJS usando o adaptador Express** e banco **MySQL**. O frontend AngularJS legado foi removido desta branch; os fluxos de autenticação foram migrados para componentes React.
 
-## Requisitos
+## Requisitos e inicialização
 
-- Node.js 20 ou superior e npm
+- Node.js 20+ e npm
 - MySQL 8+
-
-## Executar localmente
-
-1. Copie `.env.example` para `.env` e configure os valores. Use segredos fortes e exclusivos fora de desenvolvimento.
-2. Crie o banco e as tabelas com `mysql -u <usuario> -p < database/schema.sql`.
-3. Instale dependências e inicie os dois serviços:
+- SMTP para confirmação de email e recuperação de senha
 
 ```bash
+cp .env.example .env
+# configure as variáveis e crie as tabelas com:
+mysql -u <usuario> -p < database/schema.sql
 npm install
 npm run dev
 ```
 
-A interface abre em `http://localhost:3000`; a API NestJS/Express em `http://localhost:4000/api`.
+Frontend: `http://localhost:3000`. API: `http://localhost:4000/api`.
 
-## Estrutura
+## Funcionalidades migradas
 
-- `apps/web`: Next.js/React e interface de autenticação.
-- `apps/api`: NestJS com Express, validação de entrada, TypeORM e sessão JWT em cookie HttpOnly.
-- `database/schema.sql`: schema MySQL usado pela nova API.
-- `src/`, `server.js` e `public/`: implementação Express anterior, mantida temporariamente como referência durante a migração.
+- Cadastro com validação dos campos e confirmação por email.
+- Login e sessão JWT em cookie HttpOnly, incluindo desafio TOTP quando 2FA está ativo.
+- Área restrita com perfil do usuário e gerenciamento de 2FA (configurar QR, ativar e desativar).
+- Logout e recuperação/redefinição de senha.
 
-## API inicial
-
-- `POST /api/auth/register` — cria usuário e hash bcrypt.
-- `POST /api/auth/login` — autentica e define cookie de sessão.
-- `GET /api/auth/me` — retorna o usuário da sessão.
-- `POST /api/auth/logout` — encerra a sessão no navegador.
-
-As rotas usam validação de DTO, limite de requisições e cookies `HttpOnly`, `SameSite=Strict`, `Secure` em produção. Configure CORS para a origem real do frontend antes de publicar.
-
-## Próximas etapas da migração
-
-A primeira etapa estabelece a arquitetura e o fluxo básico de cadastro/login. Confirmação de email, recuperação de senha e 2FA existentes no sistema anterior ainda precisam ser migradas e integradas à nova API antes de considerar a paridade funcional completa. Não habilite contas públicas em produção sem esses fluxos e testes de segurança.
-
-Consulte `LICENSE` para os termos GNU GPL v3.0.
+Configure segredos fortes, `APP_BASE_URL`, SMTP e MySQL antes de executar. A API NestJS usa Express, DTO validation, rate limiting e TypeORM; o schema é aplicado via SQL versionado (`synchronize: false`). Revise e teste todos os fluxos localmente antes de produção. Consulte `LICENSE` para GNU GPL v3.0.
