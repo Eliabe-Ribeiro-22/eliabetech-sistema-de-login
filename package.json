@@ -1,27 +1,14 @@
 {
   "name": "eliabetech-sistema-de-login",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Sistema de login e cadastro com AngularJS, Express.js, Node.js, MySQL e Bootstrap.",
-  "main": "server.js",
+  "description": "Autenticação com Next.js/React, NestJS sobre Express e MySQL.",
+  "workspaces": ["apps/web", "apps/api"],
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "seed": "node scripts/seed-users.js"
+    "dev": "concurrently -k -n api,web -c blue,green \"npm run dev -w @eliabetech/api\" \"npm run dev -w @eliabetech/web\"",
+    "build": "npm run build -w @eliabetech/api && npm run build -w @eliabetech/web",
+    "start": "concurrently -k -n api,web -c blue,green \"npm run start:prod -w @eliabetech/api\" \"npm run start -w @eliabetech/web\""
   },
-  "engines": { "node": ">=18" },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "cookie-parser": "^1.4.7",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "express-rate-limit": "^7.5.0",
-    "helmet": "^8.0.0",
-    "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.12.0",
-    "nodemailer": "^6.10.1",
-    "otplib": "^12.0.1",
-    "qrcode": "^1.5.4"
-  },
-  "devDependencies": { "nodemon": "^3.1.9" }
+  "engines": { "node": ">=20" },
+  "devDependencies": { "concurrently": "^9.1.2" }
 }

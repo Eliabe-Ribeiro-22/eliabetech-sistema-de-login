@@ -1,6 +1,1 @@
-(function () {
-  'use strict';
-  angular.element(document).ready(function () {
-    angular.bootstrap(document, ['eliabeTechApp']);
-  });
-}());
+// AngularJS bootstrap removed. The active React/Next.js app lives in apps/web.
