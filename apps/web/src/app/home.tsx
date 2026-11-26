@@ -1,0 +1,20 @@
+'use client';
+import { FormEvent, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+type User = { firstName: string; lastName: string; email: string; twoFactorEnabled?: boolean };
+export default function Home() {
+  const [mode,setMode]=useState('login'); const [user,setUser]=useState<User|null>(null); const [message,setMessage]=useState(''); const [busy,setBusy]=useState(false); const [mfa,setMfa]=useState(false); const query=useSearchParams();
+  useEffect(()=>{const token=query.get('token');if(location.pathname==='/verify'&&token){fetch(`${API}/auth/verify-email`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})}).then(r=>r.json()).then(d=>{setMessage(d.message);setMode('login')}).catch(()=>setMessage('Não foi possível confirmar o email.'));}},[query]);
+  async function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();setMessage('');setBusy(true);const payload=Object.fromEntries(new FormData(event.currentTarget).entries());try{const endpoint=mfa?'login/2fa':mode==='register'?'register':mode==='forgot'?'forgot-password':mode==='reset'?'reset-password':'login';const response=await fetch(`${API}/auth/${endpoint}`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify(payload)});const data=await response.json();if(!response.ok)throw new Error(data.message||'Não foi possível concluir.');if(data.requiresTwoFactor)setMfa(true);else if(endpoint==='login')setUser(data.user);setMessage(data.message);}catch(error){setMessage(error instanceof Error?error.message:'Erro de conexão com a API.');}finally{setBusy(false);}}
+  async function logout(){await fetch(`${API}/auth/logout`,{method:'POST',credentials:'include'});setUser(null);setMessage('Sessão encerrada.');}
+  if(user)return <main className="shell"><section className="card"><span className="eyebrow">ÁREA RESTRITA</span><h1>Olá, {user.firstName}!</h1><p>Sessão autenticada para <strong>{user.email}</strong>.</p><button className="primary" onClick={logout}>Sair</button></section></main>;
+  const title=mfa?'Verificação em duas etapas':mode==='register'?'Crie sua conta':mode==='forgot'?'Recuperar senha':mode==='reset'?'Redefinir senha':'Acesse sua conta';
+  return <main className="shell"><section className="card"><span className="eyebrow">ELIABETECH · CONTA SEGURA</span><h1>{title}</h1><p className="sub">{mfa?'Informe o código do autenticador.':mode==='register'?'Confirme seu email após o cadastro.':'Entre para continuar.'}</p><form onSubmit={submit}>
+    {mode==='register'&&<><label>Nome<input name="firstName" required maxLength={80}/></label><label>Sobrenome<input name="lastName" required maxLength={120}/></label><label>Telefone<input name="phone" required maxLength={24}/></label></>}
+    {['login','register','forgot'].includes(mode)&&!mfa&&<label>Email<input name="email" type="email" required maxLength={254}/></label>}
+    {['login','register'].includes(mode)&&!mfa&&<label>Senha<input name="password" type="password" minLength={8} maxLength={72} required/></label>}
+    {(mode==='reset'||mfa)&&<><label>{mfa?'Código 2FA':'Token de redefinição'}<input name={mfa?'code':'token'} required minLength={mfa?6:64} maxLength={mfa?8:64}/></label>{!mfa&&<label>Nova senha<input name="password" type="password" minLength={8} maxLength={72} required/></label>}</>}
+    <button className="primary" disabled={busy}>{busy?'Aguarde…':mfa?'Verificar':mode==='register'?'Cadastrar':mode==='forgot'?'Enviar instruções':mode==='reset'?'Salvar nova senha':'Entrar'}</button>
+  </form>{message&&<p className="message" role="status">{message}</p>}<nav className="links">{!mfa&&<>{mode==='login'&&<button onClick={()=>{setMode('forgot');setMessage('')}}>Esqueci minha senha</button>}<button onClick={()=>{setMode(mode==='register'?'login':'register');setMessage('')}}>{mode==='register'?'Já tem conta? Entre':'Criar conta'}</button></>}</nav></section></main>;
+}

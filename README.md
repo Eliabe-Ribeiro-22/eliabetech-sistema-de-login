@@ -1,48 +1,38 @@
-# EliabeTech - Sistema de Login
+# EliabeTech — Sistema de Login
 
-Aplicação de autenticação com AngularJS, Express.js, Node.js, MySQL e Bootstrap. Interface em português, com azul principal `#01AFF1`, preto `#000000` e texto branco `#FFFFFF`.
+Migração para um monorepo com frontend **React + Next.js**, backend **NestJS usando Express** e banco **MySQL**. O Express é o adaptador HTTP do NestJS; não é necessário manter um segundo servidor Express. A implementação anterior permanece nos caminhos existentes como referência, mas os novos comandos usam `apps/web` e `apps/api`.
 
-> Descrição do projeto: a definir.
+## Requisitos e inicialização
 
-## Requisitos
-
-- Node.js 18 ou superior e npm
-- MySQL 8 ou compatível
-- Serviço SMTP para envio de email
-- Aplicativo autenticador TOTP para quem ativar 2FA
-
-## Configuração
-
-1. Para uma instalação nova, execute `database/schema.sql` no MySQL. Para o banco existente, execute uma única vez `database/migrations/001_email_verification_and_2fa.sql`.
-2. Copie `.env.example` para `.env`. Configure MySQL, um `JWT_SECRET` forte, credenciais SMTP e a URL pública `APP_BASE_URL` (HTTPS em produção).
-3. Gere `MFA_ENCRYPTION_KEY` com `openssl rand -hex 32`. Guarde a chave em um cofre de segredos e mantenha backup seguro; perder ou trocar essa chave impede a validação dos autenticadores já configurados.
-4. Instale e execute:
+- Node.js 20+ e npm
+- MySQL 8+
+- SMTP para confirmação de email e recuperação de senha
 
 ```bash
+cp .env.example .env
+# configure as variáveis e crie as tabelas com:
+mysql -u <usuario> -p < database/schema.sql
 npm install
-npm start
+npm run dev
 ```
 
-A aplicação estará em `http://localhost:3000`. Para desenvolvimento, use `npm run dev`.
+Frontend: `http://localhost:3000`. API: `http://localhost:4000/api`. Configure segredos fortes, `APP_BASE_URL` e SMTP antes de disponibilizar o serviço. Não use credenciais de exemplo em produção.
 
-## Confirmação de email
+## Aplicações
 
-O cadastro envia um link de uso único, válido por 30 minutos. O link confirma o endereço e libera o login. O token aleatório é armazenado somente como hash SHA-256. Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` e `APP_BASE_URL`.
+- `apps/web`: interface React renderizada pelo Next.js.
+- `apps/api`: API NestJS servida pelo adaptador Express, TypeORM e MySQL.
+- `database/schema.sql`: tabelas para instalações novas; o schema existente continua preservado para instalações antigas.
 
-## Área do usuário e 2FA
+## Fluxos da API
 
-Após entrar, a área do usuário exibe nome, sobrenome, telefone e email. O 2FA é opcional e usa códigos TOTP de seis dígitos compatíveis com aplicativos autenticadores. A ativação exige escanear o QR code (ou inserir a chave manual) e confirmar um código; desativar também exige o código atual. Segredos TOTP são criptografados com AES-256-GCM no banco. Configure `MFA_ENCRYPTION_KEY` antes de usar esses recursos.
+- Cadastro e confirmação de email por token de uso único.
+- Login por email/senha; usuários com 2FA passam por desafio TOTP.
+- Consulta de sessão, logout e configuração/ativação/desativação de 2FA.
+- Solicitação e conclusão de redefinição de senha.
 
-## Contas iniciais
+Sessões e desafios usam cookies HttpOnly, SameSite=Strict, Secure em produção. A API valida DTOs, aplica limite de requisições e não expõe hashes/segredos. O schema é gerenciado pelo SQL versionado (`synchronize: false`).
 
-O script opcional cria os quatro perfis informados usando senhas vindas de variáveis de ambiente e hashes bcrypt; essas contas iniciais são marcadas como verificadas. Defina `SEED_USER_1_PASSWORD` até `SEED_USER_4_PASSWORD` temporariamente e execute `npm run seed`. Nunca faça commit de senhas ou do `.env`; altere credenciais que tenham sido compartilhadas antes de usar em produção.
+## Observação de migração
 
-## Segurança
-
-- Senhas armazenadas com bcrypt.
-- Sessões em cookie JWT `HttpOnly`, `SameSite=Strict` e `Secure` em produção.
-- Consultas MySQL parametrizadas e limitação de requisições.
-- Tokens de confirmação com validade e uso único.
-- Use HTTPS e mantenha segredos fora do Git.
-
-Consulte `LICENSE` para os termos GNU GPL v3.0.
+A branch `refatorar-2.0` contém a nova base e mantém os arquivos legados para comparação. Revise e teste a aplicação, configure SMTP e valide os fluxos em ambiente local antes de produção. O login anterior não deve ser tratado como removido até concluir a migração e a validação funcional.
