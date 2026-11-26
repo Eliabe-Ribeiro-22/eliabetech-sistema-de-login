@@ -2,7 +2,7 @@
 
 Aplicação de autenticação com AngularJS, Express.js, Node.js, MySQL e Bootstrap. Interface em português, com azul principal `#01AFF1`, preto `#000000` e texto branco `#FFFFFF`.
 
-> Descrição do projeto: a definir.
+> Descrição do projeto: É um sistema de login completo, open-source, grátis, na qual o usuário cria logins para acessar a área restrita do sistema. Ele conta com validação de email, recuperação de senha, opção de 2FA (Verificação de 2 Fatores), uso de links, envio automático de email e uso de QR Code
 
 ## Requisitos
 
