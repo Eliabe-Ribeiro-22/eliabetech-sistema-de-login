@@ -1,7 +1,4 @@
-CREATE DATABASE IF NOT EXISTS eliabetech_login
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
+CREATE DATABASE IF NOT EXISTS eliabetech_login CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE eliabetech_login;
 
 CREATE TABLE IF NOT EXISTS users (
@@ -18,16 +15,4 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY users_email_unique (email)
-) ENGINE=InnoDB;
-
-CREATE TABLE IF NOT EXISTS email_verification_tokens (
-  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  user_id BIGINT UNSIGNED NOT NULL,
-  token_hash CHAR(64) NOT NULL,
-  expires_at DATETIME NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  UNIQUE KEY verification_token_hash_unique (token_hash),
-  UNIQUE KEY verification_user_unique (user_id),
-  CONSTRAINT verification_user_fk FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
