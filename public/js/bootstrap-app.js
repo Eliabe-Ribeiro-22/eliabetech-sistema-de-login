@@ -1,6 +1,1 @@
-(function () {
-  'use strict';
-  angular.element(document).ready(function () {
-    angular.bootstrap(document, ['eliabeTechApp']);
-  });
-}());
+// AngularJS bootstrap removed; the application now runs from apps/web (Next.js).
