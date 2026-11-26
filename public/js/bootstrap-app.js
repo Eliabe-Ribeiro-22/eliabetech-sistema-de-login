@@ -1,1 +1,1 @@
-// AngularJS bootstrap removed; the application now runs from apps/web (Next.js).
+// AngularJS bootstrap removed. The active React/Next.js app lives in apps/web.

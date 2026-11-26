@@ -1,1 +1,1 @@
-// AngularJS frontend removed; the application now runs from apps/web (Next.js).
+// AngularJS frontend removed. The active React/Next.js app lives in apps/web.
