@@ -1,48 +1,43 @@
-# EliabeTech - Sistema de Login
+# EliabeTech — Sistema de Login
 
-Aplicação de autenticação com AngularJS, Express.js, Node.js, MySQL e Bootstrap. Interface em português, com azul principal `#01AFF1`, preto `#000000` e texto branco `#FFFFFF`.
-
-> Descrição do projeto: É um sistema de login completo, open-source, grátis, na qual o usuário cria logins para acessar a área restrita do sistema. Ele conta com validação de email, recuperação de senha, opção de 2FA (Verificação de 2 Fatores), uso de links, envio automático de email e uso de QR Code
+Aplicação reorganizada como monorepo: interface React com Next.js e API NestJS usando o adaptador Express padrão, com MySQL. A implementação anterior em Express está mantida nos arquivos existentes enquanto a migração evolui; os comandos da raiz executam as novas aplicações em `apps/web` e `apps/api`.
 
 ## Requisitos
 
-- Node.js 18 ou superior e npm
-- MySQL 8 ou compatível
-- Serviço SMTP para envio de email
-- Aplicativo autenticador TOTP para quem ativar 2FA
+- Node.js 20 ou superior e npm
+- MySQL 8+
 
-## Configuração
+## Executar localmente
 
-1. Para uma instalação nova, execute `database/schema.sql` no MySQL. Para o banco existente, execute uma única vez `database/migrations/001_email_verification_and_2fa.sql`.
-2. Copie `.env.example` para `.env`. Configure MySQL, um `JWT_SECRET` forte, credenciais SMTP e a URL pública `APP_BASE_URL` (HTTPS em produção).
-3. Gere `MFA_ENCRYPTION_KEY` com `openssl rand -hex 32`. Guarde a chave em um cofre de segredos e mantenha backup seguro; perder ou trocar essa chave impede a validação dos autenticadores já configurados.
-4. Instale e execute:
+1. Copie `.env.example` para `.env` e configure os valores. Use segredos fortes e exclusivos fora de desenvolvimento.
+2. Crie o banco e as tabelas com `mysql -u <usuario> -p < database/schema.sql`.
+3. Instale dependências e inicie os dois serviços:
 
 ```bash
 npm install
-npm start
+npm run dev
 ```
 
-A aplicação estará em `http://localhost:3000`. Para desenvolvimento, use `npm run dev`.
+A interface abre em `http://localhost:3000`; a API NestJS/Express em `http://localhost:4000/api`.
 
-## Confirmação de email
+## Estrutura
 
-O cadastro envia um link de uso único, válido por 30 minutos. O link confirma o endereço e libera o login. O token aleatório é armazenado somente como hash SHA-256. Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` e `APP_BASE_URL`.
+- `apps/web`: Next.js/React e interface de autenticação.
+- `apps/api`: NestJS com Express, validação de entrada, TypeORM e sessão JWT em cookie HttpOnly.
+- `database/schema.sql`: schema MySQL usado pela nova API.
+- `src/`, `server.js` e `public/`: implementação Express anterior, mantida temporariamente como referência durante a migração.
 
-## Área do usuário e 2FA
+## API inicial
 
-Após entrar, a área do usuário exibe nome, sobrenome, telefone e email. O 2FA é opcional e usa códigos TOTP de seis dígitos compatíveis com aplicativos autenticadores. A ativação exige escanear o QR code (ou inserir a chave manual) e confirmar um código; desativar também exige o código atual. Segredos TOTP são criptografados com AES-256-GCM no banco. Configure `MFA_ENCRYPTION_KEY` antes de usar esses recursos.
+- `POST /api/auth/register` — cria usuário e hash bcrypt.
+- `POST /api/auth/login` — autentica e define cookie de sessão.
+- `GET /api/auth/me` — retorna o usuário da sessão.
+- `POST /api/auth/logout` — encerra a sessão no navegador.
 
-## Contas iniciais
+As rotas usam validação de DTO, limite de requisições e cookies `HttpOnly`, `SameSite=Strict`, `Secure` em produção. Configure CORS para a origem real do frontend antes de publicar.
 
-O script opcional cria os quatro perfis informados usando senhas vindas de variáveis de ambiente e hashes bcrypt; essas contas iniciais são marcadas como verificadas. Defina `SEED_USER_1_PASSWORD` até `SEED_USER_4_PASSWORD` temporariamente e execute `npm run seed`. Nunca faça commit de senhas ou do `.env`; altere credenciais que tenham sido compartilhadas antes de usar em produção.
+## Próximas etapas da migração
 
-## Segurança
-
-- Senhas armazenadas com bcrypt.
-- Sessões em cookie JWT `HttpOnly`, `SameSite=Strict` e `Secure` em produção.
-- Consultas MySQL parametrizadas e limitação de requisições.
-- Tokens de confirmação com validade e uso único.
-- Use HTTPS e mantenha segredos fora do Git.
+A primeira etapa estabelece a arquitetura e o fluxo básico de cadastro/login. Confirmação de email, recuperação de senha e 2FA existentes no sistema anterior ainda precisam ser migradas e integradas à nova API antes de considerar a paridade funcional completa. Não habilite contas públicas em produção sem esses fluxos e testes de segurança.
 
 Consulte `LICENSE` para os termos GNU GPL v3.0.
